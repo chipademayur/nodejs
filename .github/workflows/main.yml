@@ -1,0 +1,32 @@
+name: Node.js Application
+
+on:
+  workflow_call:
+    inputs:
+      project_name:
+        required: true
+        default: 'nodejs'
+        type: string
+      image_name:
+        required: true
+        default: 'first'
+        type: string
+
+jobs:
+  checkout:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
+
+  build-the-image:
+    runs-on: self-hosted
+    needs: checkout  # Ensures this job runs after the checkout job
+    steps:
+      - name: Build the Docker image
+        run: |
+          sudo docker build -t "${{ inputs.project_name }}/${{ inputs.image_name }}:latest" .
